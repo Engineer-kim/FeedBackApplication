@@ -1,33 +1,37 @@
-from lib2to3.fixes.fix_input import context
-from urllib import request
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from .forms import ReviewForm
-from django.views import View
 from django.views.generic.base import TemplateView
 from .models import Review
-from django.views.generic import ListView
-
-
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import FormView
 
 # Create your views here.
 
-class ReviewView(View):
-    def get(self, request):
-        form = ReviewForm()
+class ReviewView(FormView): #FormView를 사용하면 처음 페이지를 불러올때의 겟 , 인풋값들을  다 채우고 포스트할때 전부 다 알아서 처리됨
+    # 그래서 form_valid() 메서드에서 실제 데이터 처리 로직만 구현
+    form_class = ReviewForm
+    template_name = 'reviews/review.html'
+    success_url = '/thank-you'
 
-        return render(request, "reviews/review.html", {
-            "form": form
-        })
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    # def get(self, request):
+    #     form = ReviewForm()
+    #
+    #     return render(request, "reviews/review.html", {
+    #         "form": form
+    #     })
 
 
-    def post(self, request):
-        form = ReviewForm(request.POST)
-
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("/thank-you")
+    # def post(self, request):
+    #     form = ReviewForm(request.POST)
+    #
+    #     if form.is_valid():
+    #         form.save()
+    #         return HttpResponseRedirect("/thank-you")
 
 # def review(request):
 #     if request.method == 'POST':
@@ -78,12 +82,13 @@ class ReviewListView(ListView):
 
 
 
-class SingleReviewView(TemplateView):
+class SingleReviewView(DetailView): #DetailView 사용하면 별도의 함수 작성안해도 됨(편함)
     template_name = "reviews/single_review.html"
+    model = Review
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        review_id = kwargs.get("id")
-        selected_review = Review.objects.get(pk=review_id)
-        context["review"] = selected_review
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     review_id = kwargs.get("id")
+    #     selected_review = Review.objects.get(pk=review_id)
+    #     context["review"] = selected_review
+    #     return context
