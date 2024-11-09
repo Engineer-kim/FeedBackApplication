@@ -4,19 +4,26 @@ from .forms import ReviewForm
 from django.views.generic.base import TemplateView
 from .models import Review
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView ,CreateView
 
 # Create your views here.
 
-class ReviewView(FormView): #FormView를 사용하면 처음 페이지를 불러올때의 겟 , 인풋값들을  다 채우고 포스트할때 전부 다 알아서 처리됨
-    # 그래서 form_valid() 메서드에서 실제 데이터 처리 로직만 구현
-    form_class = ReviewForm
+# class ReviewView(FormView): #FormView를 사용하면 처음 페이지를 불러올때의 겟 , 인풋값들을  다 채우고 포스트할때 전부 다 알아서 처리됨
+#     # 그래서 form_valid() 메서드에서 실제 데이터 처리 로직만 구현
+#     form_class = ReviewForm
+#     template_name = 'reviews/review.html'
+#     success_url = '/thank-you'
+#
+#     def form_valid(self, form):
+#         form.save()
+#         return super().form_valid(form)
+
+class ReviewView(CreateView):
+    model = Review
+    form_class = ReviewForm    # fields = '__all__' 와 동일함
     template_name = 'reviews/review.html'
     success_url = '/thank-you'
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
 
     # def get(self, request):
     #     form = ReviewForm()
