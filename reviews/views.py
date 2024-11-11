@@ -1,10 +1,13 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.template.context_processors import request
+
 from .forms import ReviewForm
 from django.views.generic.base import TemplateView
 from .models import Review
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import FormView ,CreateView
+from django.views.generic.edit import CreateView
+from django.views import View
 
 # Create your views here.
 
@@ -93,9 +96,24 @@ class SingleReviewView(DetailView): #DetailView 사용하면 별도의 함수 �
     template_name = "reviews/single_review.html"
     model = Review
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        loaded_review = self.object
+        request = self.request
+        favorite_id = request.session.get('review_id')
+        context["is_favorite"] = favorite_id  == str(loaded_review.id) #favorite_id  == loaded_review 가 같으면 True 다르면 False 리턴
+        return context
+
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
     #     review_id = kwargs.get("id")
     #     selected_review = Review.objects.get(pk=review_id)
     #     context["review"] = selected_review
     #     return context
+
+class AddFavoriteView(View):
+    def post(self, request):
+        review_id = request.POST['review_id']
+        #fav_review =Review.objects.get(pk=review_id) #장고의 세션은 JSON 형식을 지원하지 않기때문에 단순한 값만 저장해야함
+        request.session["favorite_review"] = review_id
+        return HttpResponseRedirect("/reviews/" + review_id)
