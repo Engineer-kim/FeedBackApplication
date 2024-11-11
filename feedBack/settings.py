@@ -118,11 +118,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_ROOT = BASE_DIR / 'uploads'
+MEDIA_ROOT = BASE_DIR / 'uploads'#프로젝트내에서의 이미지 저장위치
+MEDIA_URL = "/user-media/"#클라이언트가 브라우저를 통해 미디어 파일에 접근할 수 있는 URL 경로를 지정(웹에서 사용자가 파일에 접근할떄 사용)
